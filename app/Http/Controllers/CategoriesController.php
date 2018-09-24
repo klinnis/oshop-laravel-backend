@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 
 class CategoriesController extends Controller
@@ -29,16 +30,17 @@ class CategoriesController extends Controller
 
    public function storeProduct(Request $request) {
 
-       //$category= $request->input('categories');
+       $category_name= $request->categories;
 
-     //  $category_id = Category::select('id')->where('name', $category)->get();
+       $category_id = Category::select('id')->where('name', $category_name)->first();
+       $final= $category_id->id;
 
        $product = new Product();
 
-      $product->title = 'ghhgh';
-      $product->price = 'ghgfhfgh';
-      $product->category_id = 'fghfghh';
-      $product->imageUrl = 'hgfghfghg';
+      $product->title = $request->title;
+      $product->price = $request->price;
+      $product->category_id = $final;
+      $product->imageUrl = $request->imageUrl;
 
       $product->save();
 
@@ -49,7 +51,26 @@ class CategoriesController extends Controller
    }
 
    public function getOneProduct($id) {
-      return  Product::find($id);
+
+      $product = Product::find($id);
+      $category = Product::select('category_id')->where('id', $id)->first();
+      $category_id = $category->category_id;
+
+       $category_final = Category::select('name')->where('id', $category_id)->first();
+       $final = $category_final->name;
+
+
+       $data = [
+           "title" => $product->title,
+           "price" => $product->price,
+           "imageUrl" => $product->imageUrl,
+           "categories" => $final
+
+    ];
+
+
+       return response()->json($data);
+
 
    }
 

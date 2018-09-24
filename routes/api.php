@@ -19,7 +19,7 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::post('sendPasswordResetLink', 'ResetPasswordController@sendEmail');
     Route::post('me', 'AuthController@me');
-    Route::patch('store', 'CategoriesController@storeProduct');
+    Route::put('store', 'CategoriesController@storeProduct');
     Route::put('updateproduct/{id}', 'CategoriesController@updateProduct');
 
     Route::get('categories', 'CategoriesController@getCategories');
