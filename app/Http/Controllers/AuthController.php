@@ -41,6 +41,7 @@ class AuthController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = $request->password;
+        $user->isAdmin = '0';
         $user->save();
           // User::create($request->all());
           return $this->login($user);
@@ -89,7 +90,8 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()->name
+            'user' => auth()->user()->name,
+            'isAdmin' => auth()->user()->isAdmin
         ]);
     }
 }
