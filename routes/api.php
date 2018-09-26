@@ -21,11 +21,15 @@ Route::group([
     Route::post('me', 'AuthController@me');
     Route::put('store', 'CategoriesController@storeProduct');
     Route::put('updateproduct/{id}', 'CategoriesController@updateProduct');
+    Route::put('newcart', 'CategoriesController@newCart');
 
     Route::get('categories', 'CategoriesController@getCategories');
     Route::get('product-names/{name}', 'CategoriesController@getProductNames');
     Route::get('products', 'CategoriesController@getProducts');
     Route::get('oneproduct/{id}', 'CategoriesController@getOneProduct');
+    Route::get('allproductnames/{id}', 'CategoriesController@getProductNamesAll');
+
+    Route::delete('deleteproduct/{id}', 'CategoriesController@deleteProduct');
 
 
 });

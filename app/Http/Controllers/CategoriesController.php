@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Product;
+use App\ShoppingCart;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -14,7 +15,7 @@ class CategoriesController extends Controller
 
    public function getCategories() {
 
-       return Category::select('name')->get();
+       return Category::all();
    }
 
    public function getProductNames($name) {
@@ -48,6 +49,12 @@ class CategoriesController extends Controller
 
    public function getProducts() {
        return Product::all();
+   }
+
+   public function getProductNamesAll($id) {
+
+       return Product::select('title', 'price', 'imageUrl')->where('category_id', $id)->get();
+
    }
 
    public function getOneProduct($id) {
@@ -88,6 +95,28 @@ class CategoriesController extends Controller
         $product->imageUrl =  $request->imageUrl;
 
         $product->save();
+
+    }
+
+    public function deleteProduct($id) {
+        Product::find($id)->delete();
+    }
+
+    public function newCart(Request $request) {
+
+          $input = $request->all();
+          $ini= null;
+          foreach($input as $in){
+             $ini = $in;
+          }
+          $cart = new ShoppingCart();
+          $cart->created = $ini;
+          $cart->save();
+
+          $id = ShoppingCart::select('id')->where('created', $ini)->first();
+
+
+        return response()->json($id);
 
     }
 
