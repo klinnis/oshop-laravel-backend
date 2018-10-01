@@ -18,5 +18,9 @@ class Product extends Model
         return $this->belongsTo('App\Category');
     }
 
+    public function items() {
+        return $this->hasMany('App\Item');
+    }
+
     public $timestamps = false;
 }

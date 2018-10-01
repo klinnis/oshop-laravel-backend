@@ -22,12 +22,15 @@ Route::group([
     Route::put('store', 'CategoriesController@storeProduct');
     Route::put('updateproduct/{id}', 'CategoriesController@updateProduct');
     Route::put('newcart', 'CategoriesController@newCart');
+    Route::put('createItem', 'CategoriesController@createItem');
 
     Route::get('categories', 'CategoriesController@getCategories');
     Route::get('product-names/{name}', 'CategoriesController@getProductNames');
-    Route::get('products', 'CategoriesController@getProducts');
+    Route::get('products/{id}', 'CategoriesController@getProducts');
     Route::get('oneproduct/{id}', 'CategoriesController@getOneProduct');
     Route::get('allproductnames/{id}', 'CategoriesController@getProductNamesAll');
+    Route::get('getCartId/{id}', 'CategoriesController@getCartId');
+    Route::get('getCart/{id}', 'CategoriesController@getCart');
 
     Route::delete('deleteproduct/{id}', 'CategoriesController@deleteProduct');
 

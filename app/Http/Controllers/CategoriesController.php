@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Item;
 use App\Product;
 use App\ShoppingCart;
 use Illuminate\Http\Request;
@@ -47,13 +48,21 @@ class CategoriesController extends Controller
 
    }
 
-   public function getProducts() {
-       return Product::all();
+   public function getProducts($id) {
+
+
+      return $query = Product::select('title','price','imageUrl','quantity','products.id')
+           ->join('items','items.product_id','=','products.id')
+           ->where('shopping_cart_id',$id)->get();
+
+
    }
+
+
 
    public function getProductNamesAll($id) {
 
-       return Product::select('title', 'price', 'imageUrl')->where('category_id', $id)->get();
+       return Product::select('id','title', 'price', 'imageUrl')->where('category_id', $id)->get();
 
    }
 
@@ -119,5 +128,55 @@ class CategoriesController extends Controller
         return response()->json($id);
 
     }
+
+    public function getCartId($id) {
+
+       $cart = ShoppingCart::find($id)->select('id')->first();
+      return  $cartId = $cart->id;
+
+    }
+
+    public function createItem(Request $request)
+    {
+
+
+        $cart = Item::select('quantity')
+            ->where('shopping_cart_id', $request->car)
+            ->where('product_id', $request->pro)->first();
+
+
+
+
+        if ($cart === null) {
+
+
+            $item = new Item();
+
+            $item->shopping_cart_id = $request->car;
+            $item->product_id = $request->pro;
+            $item->quantity = 0;
+            $item->save();
+
+        }
+
+        if ($cart != null) {
+
+            $old= $cart->quantity;
+            $new = $old +1;
+
+            Item::where('shopping_cart_id', $request->car)
+                ->where('product_id', $request->pro)->update(['quantity' => $new]);
+
+
+        }
+
+          return response()->json($cart->quantity);
+    }
+
+    public function getCart($id) {
+         $cart = ShoppingCart::find($id);
+         return $cart->items;
+    }
+
 
 }
