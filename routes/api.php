@@ -28,11 +28,12 @@ Route::group([
     Route::get('product-names/{name}', 'CategoriesController@getProductNames');
     Route::get('products/{id}', 'CategoriesController@getProducts');
     Route::get('oneproduct/{id}', 'CategoriesController@getOneProduct');
-    Route::get('allproductnames/{id}', 'CategoriesController@getProductNamesAll');
+    Route::put('allproductnames', 'CategoriesController@getProductNamesAll');
     Route::get('getCartId/{id}', 'CategoriesController@getCartId');
     Route::get('getCart/{id}', 'CategoriesController@getCart');
 
     Route::delete('deleteproduct/{id}', 'CategoriesController@deleteProduct');
+    Route::put('deleteItem', 'CategoriesController@deleteItem');
 
 
 });

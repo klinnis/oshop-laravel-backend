@@ -8,6 +8,7 @@ use App\Product;
 use App\ShoppingCart;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 
 class CategoriesController extends Controller
@@ -51,20 +52,50 @@ class CategoriesController extends Controller
    public function getProducts($id) {
 
 
-      return $query = Product::select('title','price','imageUrl','quantity','products.id')
-           ->join('items','items.product_id','=','products.id')
-           ->where('shopping_cart_id',$id)->get();
 
+                 if($id === -1) {
+                     return Product::select('title', 'price', 'imageUrl');
+                 }
+
+
+
+
+     return Product::select('products.id', 'products.title', 'products.price', 'products.imageUrl',
+           DB::raw('CASE WHEN items.quantity IS NULL THEN 0 ELSE items.quantity END as quantity'))
+       ->leftJoin('items', function($join) use($id){
+           $join->on('products.id', '=', 'items.product_id')
+               ->where('items.shopping_cart_id', '=', $id);
+       })->get();
 
    }
 
 
 
-   public function getProductNamesAll($id) {
+   public function getProductNamesAll(Request $request) {
 
-       return Product::select('id','title', 'price', 'imageUrl')->where('category_id', $id)->get();
+     $namid = $request->nam;
+     $cartid = $request->cart;
+
+      if($request->cart === null){
+
+         return Product::select('products.id','title', 'price', 'imageUrl')
+         ->join('categories', 'categories.id', '=', 'products.category_id')
+           ->where('products.category_id', $request->nam)->get();
+          }
+
+       return Product::select('products.id', 'products.title', 'products.price', 'products.imageUrl',
+           DB::raw('CASE WHEN items.quantity IS NULL THEN 0 ELSE items.quantity END as quantity'))
+           ->join('categories', 'categories.id', '=', 'products.category_id')->where('products.category_id', '=', $namid)
+           ->leftJoin('items', function($join) use($cartid, $namid){
+               $join->on('products.id', '=', 'items.product_id')
+                   ->where('items.shopping_cart_id', '=', $cartid);
+           })->get();
+
+
 
    }
+
+
 
    public function getOneProduct($id) {
 
@@ -140,42 +171,51 @@ class CategoriesController extends Controller
     {
 
 
-        $cart = Item::select('quantity')
-            ->where('shopping_cart_id', $request->car)
+        $cart_item_quantity = Item::select('quantity')->where('shopping_cart_id', $request->car)
             ->where('product_id', $request->pro)->first();
 
+         if( $cart_item_quantity === null) {
+
+             $item = new Item();
+
+             $item->shopping_cart_id = $request->car;
+             $item->product_id = $request->pro;
+             $item->quantity = 1;
+             $item->save();
+
+         } else {
+             $new = $cart_item_quantity->quantity + 1;
+             Item::where('shopping_cart_id', $request->car)
+                 ->where('product_id', $request->pro)->update(['quantity' => $new]);
+
+         }
 
 
 
-        if ($cart === null) {
 
 
-            $item = new Item();
-
-            $item->shopping_cart_id = $request->car;
-            $item->product_id = $request->pro;
-            $item->quantity = 0;
-            $item->save();
-
-        }
-
-        if ($cart != null) {
-
-            $old= $cart->quantity;
-            $new = $old +1;
-
-            Item::where('shopping_cart_id', $request->car)
-                ->where('product_id', $request->pro)->update(['quantity' => $new]);
 
 
-        }
-
-          return response()->json($cart->quantity);
     }
+
+
+
+
+
 
     public function getCart($id) {
          $cart = ShoppingCart::find($id);
          return $cart->items;
+    }
+
+    public function deleteItem(Request $request) {
+       $quantity = Item::select('quantity')->where('shopping_cart_id', $request->car)->where('product_id', $request->pro)->first();
+       $new =$quantity->quantity-1;
+       if($new <= 0) {
+           Item::where('shopping_cart_id', $request->car)->where('product_id', $request->pro)->delete();
+       }
+
+       Item::select('quantity')->where('shopping_cart_id', $request->car)->where('product_id', $request->pro)->update(['quantity' => $new]);
     }
 
 
