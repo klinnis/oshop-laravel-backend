@@ -31,6 +31,7 @@ Route::group([
     Route::put('allproductnames', 'CategoriesController@getProductNamesAll');
     Route::get('getCartId/{id}', 'CategoriesController@getCartId');
     Route::get('getCart/{id}', 'CategoriesController@getCart');
+    Route::get('all_items/{id}', 'CategoriesController@getAllItems');
 
     Route::delete('deleteproduct/{id}', 'CategoriesController@deleteProduct');
     Route::put('deleteItem', 'CategoriesController@deleteItem');

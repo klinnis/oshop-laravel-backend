@@ -218,5 +218,12 @@ class CategoriesController extends Controller
        Item::select('quantity')->where('shopping_cart_id', $request->car)->where('product_id', $request->pro)->update(['quantity' => $new]);
     }
 
+    public function getAllItems($id) {
+
+       $cart = ShoppingCart::find($id);
+       return $cart->items->count();
+
+    }
+
 
 }
